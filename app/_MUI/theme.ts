@@ -167,6 +167,7 @@ export const themeSettings = (mode: PaletteMode): ThemeOptions => {
               color: "#f2f0f0",
               borderRadius: "5px",
               fontWeight: "bold",
+              backgroundColor: colors.blueAccent[300],
               fontFamily: [
                 "Roboto",
                 "system-ui",
@@ -269,6 +270,7 @@ export const themeSettings = (mode: PaletteMode): ThemeOptions => {
         ].join(","),
         fontSize: 40,
         fontWeight: "bolder",
+        color:colors.blueAccent[400]
       },
       h2: {
         fontFamily: [
@@ -286,6 +288,7 @@ export const themeSettings = (mode: PaletteMode): ThemeOptions => {
         ].join(","),
         fontSize: 32,
         fontWeight: "bolder",
+        color:colors.blueAccent[400]
       },
       h3: {
         fontFamily: [
@@ -320,6 +323,7 @@ export const themeSettings = (mode: PaletteMode): ThemeOptions => {
         ].join(","),
         fontSize: 20,
         fontWeight: "bold",
+        color:colors.grey[500]
       },
       h5: {
         fontFamily: [
