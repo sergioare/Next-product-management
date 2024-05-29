@@ -9,9 +9,11 @@ import Paper from "@mui/material/Paper";
 import Image from "next/image";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { Button, useTheme } from "@mui/material";
+import { Box, Button, useTheme } from "@mui/material";
 import { tokens } from "@/app/_MUI/theme";
 import CreateUpdateItem from "./create-update-item-form";
+import ViewProduct from "./modal-viewProduct";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 export default function TableProducts({
   products,
@@ -26,9 +28,11 @@ export default function TableProducts({
   {
     /*----------- Handle delete product --------*/
   }
-  const deleteProduct = (productId: string)=>{
-    setProducts((currentProducts)=>{
-      const productIndex = currentProducts.findIndex((product) => product?.id === productId);
+  const deleteProduct = (productId: string) => {
+    setProducts((currentProducts) => {
+      const productIndex = currentProducts.findIndex(
+        (product) => product?.id === productId
+      );
 
       if (productIndex !== -1) {
         // Remove the product at the found index using splice
@@ -36,11 +40,13 @@ export default function TableProducts({
         updatedProducts.splice(productIndex, 1);
         return updatedProducts;
       } else {
-        console.warn(`Product with ID ${productId} not found in the products list. Skipping deletion.`);
+        console.warn(
+          `Product with ID ${productId} not found in the products list. Skipping deletion.`
+        );
         return currentProducts; // No change if product not found
       }
     });
-  }
+  };
 
   return (
     <TableContainer component={Paper}>
@@ -80,6 +86,11 @@ export default function TableProducts({
                     <TableCell align="right">${product.price} USD</TableCell>
                     <TableCell align="right">{product.stock} und</TableCell>
                     <TableCell align="center">
+
+                      <ViewProduct product={product}>
+                        <VisibilityIcon />
+                      </ViewProduct>
+                      
                       <CreateUpdateItem
                         itemToUpdate={product}
                         setProducts={setProducts}
@@ -88,7 +99,7 @@ export default function TableProducts({
                           sx={{
                             backgroundColor: colors.blueAccent[700],
                             color: colors.background[100],
-                            margin: "0 20px",
+                            margin: "10px",
                             "&:hover": {
                               color: colors.grey[300],
                             },
@@ -102,12 +113,11 @@ export default function TableProducts({
                         sx={{
                           backgroundColor: colors.redAccent[600],
                           color: colors.background[100],
-                          margin: "0 20px",
                           "&:hover": {
                             color: colors.grey[300],
                           },
                         }}
-                        onClick={()=> product?.id && deleteProduct(product.id)}
+                        onClick={() => product?.id && deleteProduct(product.id)}
                       >
                         <DeleteForeverIcon />
                       </Button>
