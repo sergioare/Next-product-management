@@ -23,6 +23,25 @@ export default function TableProducts({
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
+  {
+    /*----------- Handle delete product --------*/
+  }
+  const deleteProduct = (productId: string)=>{
+    setProducts((currentProducts)=>{
+      const productIndex = currentProducts.findIndex((product) => product?.id === productId);
+
+      if (productIndex !== -1) {
+        // Remove the product at the found index using splice
+        const updatedProducts = [...currentProducts]; // Create a copy
+        updatedProducts.splice(productIndex, 1);
+        return updatedProducts;
+      } else {
+        console.warn(`Product with ID ${productId} not found in the products list. Skipping deletion.`);
+        return currentProducts; // No change if product not found
+      }
+    });
+  }
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -88,6 +107,7 @@ export default function TableProducts({
                             color: colors.grey[300],
                           },
                         }}
+                        onClick={()=> product?.id && deleteProduct(product.id)}
                       >
                         <DeleteForeverIcon />
                       </Button>
