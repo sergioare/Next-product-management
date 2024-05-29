@@ -28,6 +28,7 @@ const Navbar = () => {
         alt="Brand Logo"
         width={170}
         height={50}
+        priority={true}
       />
       {user && <Typography variant="h4" sx={{fontSize:{xs:14, md:20 }, textAlign:"right"}}>Administrador {user.user.displayName || user.user.email}</Typography>}
     </Box>

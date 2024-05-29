@@ -186,7 +186,7 @@ export const themeSettings = (mode: PaletteMode): ThemeOptions => {
               textTransform: "none",
               ":hover": {
                 cursor: "pointer",
-                backgroundColor: colors.blueAccent[800],
+                backgroundColor: colors.blueAccent[400],
               },
             },
           },
