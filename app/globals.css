@@ -42,3 +42,8 @@ a {
   gap:""
 }
 
+.cardsImages{
+  object-fit: cover;
+  width: 4rem;
+  height: 4rem;
+}

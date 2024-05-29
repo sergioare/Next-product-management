@@ -81,6 +81,7 @@ export default function CreateUpdateItem() {
     try {
       console.log("enviado el formulario");
       const res = await handleCreateProduct(newProduct)
+      // console.log("respuesta del fetch",res)
       if (res && res.id) {
         console.log('Producto creado exitosamente con el id:', res.id);
         handleClose()
