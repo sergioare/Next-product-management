@@ -22,9 +22,23 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { handleCreateProduct } from "@/app/api/createProduct";
-import { productCreatedAlert, productFailedAlert } from "@/app/_Utilities/alerts";
+import {
+  productCreatedAlert,
+  productFailedAlert,
+  productUpdatedAlert,
+} from "@/app/_Utilities/alerts";
+import { handleUpdateProduct } from "@/app/api/updateProduct";
 
-export default function CreateUpdateItem() {
+interface Props {
+  children: React.ReactNode;
+  itemToUpdate?: Partial<Product>;
+  setProducts: React.Dispatch<React.SetStateAction<Partial<Product[]>>>;
+}
+export default function CreateUpdateItem({
+  children,
+  itemToUpdate,
+  setProducts,
+}: Props) {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -44,24 +58,18 @@ export default function CreateUpdateItem() {
     /*----------- State usercredentials--------*/
   }
 
-  const [newProduct, setNewProduct] = useState<Partial<Product>>({
-    title:"",
-    category:"",
-    price:0,
-    stock:0,
-    images:[],
-    description:""
-  });
-
-  const [showPassword, setShowPassword] = useState(false);
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(!showConfirmPassword);
-  };
+  const [newProduct, setNewProduct] = useState<Partial<Product>>(
+    itemToUpdate
+      ? itemToUpdate
+      : {
+          title: "",
+          category: "",
+          price: 0,
+          stock: 0,
+          images: [],
+          description: "",
+        }
+  );
 
   {
     /*----------- Loading state --------*/
@@ -80,16 +88,40 @@ export default function CreateUpdateItem() {
     setIsLoading(true);
     try {
       console.log("enviado el formulario");
-      const res = await handleCreateProduct(newProduct)
-      // console.log("respuesta del fetch",res)
-      if (res && res.id) {
-        console.log('Producto creado exitosamente con el id:', res.id);
-        handleClose()
-        productCreatedAlert();
+      if (itemToUpdate) {
+        const res = await handleUpdateProduct(newProduct);
+        console.log("Respuiestaaaaa", res);
+        // handleUpdateProductList(res)
+        productUpdatedAlert();
+        setProducts((currentProducts) => {
+          const updatedProductIndex = currentProducts.findIndex(
+            (product) => product?.id === res.id
+          );
+
+          if (updatedProductIndex !== -1) {
+            const updatedProducts = [...currentProducts];
+            updatedProducts[updatedProductIndex] = res;
+            return updatedProducts;
+          } else {
+            console.warn(
+              `Product with ID ${res.id} not found in the current products list. Skipping update.`
+            );
+            return currentProducts;
+          }
+        });
+
+        handleClose();
       } else {
-        console.error('Error: No se pudo obtener el ID del producto');
-        handleClose()
-        productFailedAlert()
+        const res = await handleCreateProduct(newProduct);
+        if (res && res.id) {
+          console.log("Producto creado exitosamente con el id:", res.id);
+          handleClose();
+          productCreatedAlert();
+        } else {
+          console.error("Error: No se pudo obtener el ID del producto");
+          handleClose();
+          productFailedAlert();
+        }
       }
     } catch (error) {
       console.error(error);
@@ -116,7 +148,7 @@ export default function CreateUpdateItem() {
   /*----------- Handle change images input --------*/
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
-  const convertToBase64 = (file:File): Promise<string> => {
+  const convertToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -141,7 +173,9 @@ export default function CreateUpdateItem() {
     if (inputElement.files) {
       const selectedFiles = Array.from(inputElement.files);
       setSelectedImages(selectedFiles);
-      const base64Images = await Promise.all(selectedFiles.map(file => convertToBase64(file)));
+      const base64Images = await Promise.all(
+        selectedFiles.map((file) => convertToBase64(file))
+      );
       setNewProduct({
         ...newProduct,
         images: base64Images,
@@ -151,34 +185,21 @@ export default function CreateUpdateItem() {
 
   return (
     <React.Fragment>
-      <Button
-        variant="outlined"
-        onClick={handleClickOpen}
-        sx={{
-          display: "flex",
-          gap: "10px",
-          alignItems: "center",
-          color: colors.blueAccent[400],
-        }}
-      >
-        Crear
-        <AddCircleOutlineIcon />
-      </Button>
+      <Box onClick={handleClickOpen}>{children}</Box>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>
-          <Typography variant="h3">Crear producto</Typography>
+          <Typography variant="h3">
+            {itemToUpdate ? "Actualizar producto" : "Crear producto"}
+          </Typography>
         </DialogTitle>
         <DialogContent>
-            <Typography variant="h4">
-              Gestiona tus productos con la siguiente información:
-            </Typography>
+          <Typography variant="h4">
+            Gestiona tus productos con la siguiente información:
+          </Typography>
 
-
-            {/*----------- Form to create new Product--------*/}
-
+          {/*----------- Form to create new Product--------*/}
 
           <form onSubmit={handleSubmit}>
-
             {/*----------- Product Name input--------*/}
             <Box className="input-form">
               <InputLabel
@@ -354,24 +375,26 @@ export default function CreateUpdateItem() {
                 multiple
               />
             </Box>
-            <Box sx={{
-              display:"flex",
-              flexWrap:"wrap",
-              gap:"20px"
-
-            }}>
-            {newProduct.images && newProduct.images.map((image: string, index: number) => (
-                <Image
-                  key={index}
-                  src={image}
-                  alt={`Product Image ${index}`}
-                  width={120}
-                  height={120}
-                  style={{ margin:"10px" , objectFit:"cover", }}
-                />
-              ))}
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "20px",
+              }}
+            >
+              {newProduct.images &&
+                newProduct.images.map((image: string, index: number) => (
+                  <Image
+                    key={index}
+                    src={image}
+                    alt={`Product Image ${index}`}
+                    width={120}
+                    height={120}
+                    style={{ margin: "10px", objectFit: "cover" }}
+                  />
+                ))}
             </Box>
-            
+
             {/*----------- Product description input--------*/}
             <Box className="input-form">
               <InputLabel
@@ -415,7 +438,7 @@ export default function CreateUpdateItem() {
               </Button>
               <Button variant="contained" type="submit" disabled={isLoading}>
                 {isLoading && <CircularProgress />}
-                Crear
+                {itemToUpdate ? "Actualizar" : "Crear"}
               </Button>
             </DialogActions>
           </form>
