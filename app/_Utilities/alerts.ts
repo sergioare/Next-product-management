@@ -45,3 +45,12 @@ export const authSuccessFirebase = () => {
     });
   };
   
+  export const productUpdatedAlert = () => {
+    Swal.fire({
+      title: "¡Producto actualizado exitosamente!",
+      text:"Sigue disfrutando de nuestros servicios",
+      icon: "success",
+      timer: 4000,
+    });
+  };
+  

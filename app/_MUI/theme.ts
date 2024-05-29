@@ -32,16 +32,16 @@ export const tokens = (mode: PaletteMode) => ({
           900: "#e1e2fe",
         },
         redAccent: {
-            100: "#2c100f",
-            200: "#58201e",
-            300: "#832f2c",
-            400: "#af3f3b",
-            500: "#db4f4a",
-            600: "#e2726e",
-            700: "#e99592",
-            800: "#f1b9b7",
-            900: "#f8dcdb",
-          },
+          100: "#2c100f",
+          200: "#58201e",
+          300: "#832f2c",
+          400: "#af3f3b",
+          500: "#db4f4a",
+          600: "#e2726e",
+          700: "#e99592",
+          800: "#f1b9b7",
+          900: "#f8dcdb",
+        },
         background: {
           100: "#E6F1FE",
         },
@@ -70,16 +70,16 @@ export const tokens = (mode: PaletteMode) => ({
           900: "#151632",
         },
         redAccent: {
-            100: "#f8dcdb",
-            200: "#f1b9b7",
-            300: "#e99592",
-            400: "#e2726e",
-            500: "#db4f4a",
-            600: "#af3f3b",
-            700: "#832f2c",
-            800: "#58201e",
-            900: "#2c100f",
-          },
+          100: "#f8dcdb",
+          200: "#f1b9b7",
+          300: "#e99592",
+          400: "#e2726e",
+          500: "#db4f4a",
+          600: "#af3f3b",
+          700: "#832f2c",
+          800: "#58201e",
+          900: "#2c100f",
+        },
         background: {
           100: "#1A2A3A",
         },
@@ -270,7 +270,7 @@ export const themeSettings = (mode: PaletteMode): ThemeOptions => {
         ].join(","),
         fontSize: 40,
         fontWeight: "bolder",
-        color:colors.blueAccent[400]
+        color: colors.blueAccent[400],
       },
       h2: {
         fontFamily: [
@@ -288,7 +288,7 @@ export const themeSettings = (mode: PaletteMode): ThemeOptions => {
         ].join(","),
         fontSize: 32,
         fontWeight: "bolder",
-        color:colors.blueAccent[400]
+        color: colors.blueAccent[400],
       },
       h3: {
         fontFamily: [
@@ -323,7 +323,7 @@ export const themeSettings = (mode: PaletteMode): ThemeOptions => {
         ].join(","),
         fontSize: 20,
         fontWeight: "bold",
-        color:colors.grey[500]
+        color: colors.grey[500],
       },
       h5: {
         fontFamily: [
