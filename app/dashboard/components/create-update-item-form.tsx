@@ -115,6 +115,8 @@ export default function CreateUpdateItem({
         const res = await handleCreateProduct(newProduct);
         if (res && res.id) {
           console.log("Producto creado exitosamente con el id:", res.id);
+          console.log(res)
+          setProducts((currentProducts) => [res, ...currentProducts]);
           handleClose();
           productCreatedAlert();
         } else {
@@ -187,11 +189,9 @@ export default function CreateUpdateItem({
     <React.Fragment>
       <Box onClick={handleClickOpen}>{children}</Box>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>
-          <Typography variant="h3">
+          <Typography variant="h3" sx={{margin:"25px 0 0 25px"}}>
             {itemToUpdate ? "Actualizar producto" : "Crear producto"}
           </Typography>
-        </DialogTitle>
         <DialogContent>
           <Typography variant="h4">
             Gestiona tus productos con la siguiente información:

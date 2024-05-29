@@ -44,7 +44,7 @@ export default function TableProducts({
               (product?: Partial<Product>) =>
                 product && (
                   <TableRow
-                    key={product.id}
+                    key={`${product?.title}-${product?.id}`}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
