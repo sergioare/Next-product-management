@@ -13,8 +13,9 @@ import {
 import CircularProgress from "@mui/material/CircularProgress";
 import { FirebaseError } from "firebase/app";
 import { errorCodesFirebase } from "@/app/_Utilities/errorCodesFirebase";
-import { signUp } from "@/app/_Firebase/FirebaseFunctions/AuthFunctions";
+import { signUp, updateUser } from "@/app/_Firebase/FirebaseFunctions/AuthFunctions";
 import { useRouter } from "next/navigation";
+import { setInLocalStorage } from "@/app/_Utilities/localStorage";
 
 // import { Metadata } from "next";
 
@@ -68,6 +69,8 @@ export default function SignUpForm() {
         displayName: userRegister.name,
       };
       let res = await signUp(authUser);
+      setInLocalStorage("user", res)
+      await updateUser({displayName: authUser.displayName})
       console.log(res);
       router.push("/dashboard");
       if (res) return authSuccessFirebase();

@@ -18,3 +18,12 @@ export const authSuccessFirebase = () => {
     });
   };
   
+  export const recoverPassAlert= () => {
+    Swal.fire({
+      title: "Revisa tu correo",
+      text:"Hemos enviado un correo de recuperación a tu bandeja de entrada",
+      icon: "success",
+      timer: 4000,
+    });
+  };
+  
