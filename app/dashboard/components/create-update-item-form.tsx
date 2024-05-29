@@ -8,6 +8,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import Image from "next/image";
 import {
   Box,
   CircularProgress,
@@ -20,6 +21,8 @@ import { tokens } from "@/app/_MUI/theme";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
+import { handleCreateProduct } from "@/app/api/createProduct";
+import { productCreatedAlert, productFailedAlert } from "@/app/_Utilities/alerts";
 
 export default function CreateUpdateItem() {
   const [open, setOpen] = React.useState(false);
@@ -41,7 +44,14 @@ export default function CreateUpdateItem() {
     /*----------- State usercredentials--------*/
   }
 
-  const [newProduct, setNewProduct] = useState<Partial<Product>>({});
+  const [newProduct, setNewProduct] = useState<Partial<Product>>({
+    title:"",
+    category:"",
+    price:0,
+    stock:0,
+    images:[],
+    description:""
+  });
 
   const [showPassword, setShowPassword] = useState(false);
   const togglePasswordVisibility = () => {
@@ -70,9 +80,16 @@ export default function CreateUpdateItem() {
     setIsLoading(true);
     try {
       console.log("enviado el formulario");
-
-      //   console.log(newProduct);
-      //   if (res) return authSuccessFirebase();
+      const res = await handleCreateProduct(newProduct)
+      if (res && res.id) {
+        console.log('Producto creado exitosamente con el id:', res.id);
+        handleClose()
+        productCreatedAlert();
+      } else {
+        console.error('Error: No se pudo obtener el ID del producto');
+        handleClose()
+        productFailedAlert()
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -98,7 +115,16 @@ export default function CreateUpdateItem() {
   /*----------- Handle change images input --------*/
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
-  const handleImagesChange = (event: React.ChangeEvent<any>) => {
+  const convertToBase64 = (file:File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  const handleImagesChange = async (event: React.ChangeEvent<any>) => {
     const inputElement = event.target as HTMLInputElement;
 
     if (inputElement.files && inputElement.files.length > 5) {
@@ -114,6 +140,11 @@ export default function CreateUpdateItem() {
     if (inputElement.files) {
       const selectedFiles = Array.from(inputElement.files);
       setSelectedImages(selectedFiles);
+      const base64Images = await Promise.all(selectedFiles.map(file => convertToBase64(file)));
+      setNewProduct({
+        ...newProduct,
+        images: base64Images,
+      });
     }
   };
 
@@ -137,12 +168,16 @@ export default function CreateUpdateItem() {
           <Typography variant="h3">Crear producto</Typography>
         </DialogTitle>
         <DialogContent>
-          <DialogContentText>
             <Typography variant="h4">
               Gestiona tus productos con la siguiente información:
             </Typography>
-          </DialogContentText>
+
+
+            {/*----------- Form to create new Product--------*/}
+
+
           <form onSubmit={handleSubmit}>
+
             {/*----------- Product Name input--------*/}
             <Box className="input-form">
               <InputLabel
@@ -150,15 +185,15 @@ export default function CreateUpdateItem() {
                   fontWeight: "bold",
                   fontSize: "16px",
                 }}
-                id="name"
+                id="title"
               >
                 Nombre del producto<span style={{ color: "#007FC0" }}>*</span>
               </InputLabel>
 
               <TextField
                 required
-                name="name"
-                id="name"
+                name="title"
+                id="title"
                 fullWidth
                 size="small"
                 autoComplete="off"
@@ -235,6 +270,7 @@ export default function CreateUpdateItem() {
                 fullWidth
                 size="small"
                 autoComplete="off"
+                type="number"
                 variant="outlined"
                 value={newProduct.price}
                 onChange={handlerChange}
@@ -270,6 +306,7 @@ export default function CreateUpdateItem() {
                 id="stock"
                 fullWidth
                 size="small"
+                type="number"
                 autoComplete="off"
                 variant="outlined"
                 value={newProduct.stock}
@@ -294,7 +331,6 @@ export default function CreateUpdateItem() {
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                marginBottom: "20px",
               }}
             >
               <InputLabel
@@ -317,7 +353,24 @@ export default function CreateUpdateItem() {
                 multiple
               />
             </Box>
+            <Box sx={{
+              display:"flex",
+              flexWrap:"wrap",
+              gap:"20px"
 
+            }}>
+            {newProduct.images && newProduct.images.map((image: string, index: number) => (
+                <Image
+                  key={index}
+                  src={image}
+                  alt={`Product Image ${index}`}
+                  width={120}
+                  height={120}
+                  style={{ margin:"10px" , objectFit:"cover", }}
+                />
+              ))}
+            </Box>
+            
             {/*----------- Product description input--------*/}
             <Box className="input-form">
               <InputLabel

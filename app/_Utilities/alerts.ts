@@ -27,3 +27,21 @@ export const authSuccessFirebase = () => {
     });
   };
   
+  export const productCreatedAlert = () => {
+    Swal.fire({
+      title: "¡Producto creado exitosamente!",
+      text:"Sigue disfrutando de nuestros servicios",
+      icon: "success",
+      timer: 4000,
+    });
+  };
+  
+  export const productFailedAlert = () => {
+    Swal.fire({
+      title: "El producto no pudo ser creado",
+      text:"Por favor, intenta nuevamente.",
+      icon: "error",
+      timer: 4000,
+    });
+  };
+  
