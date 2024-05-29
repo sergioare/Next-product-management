@@ -7,12 +7,22 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Image from "next/image";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { Button, useTheme } from "@mui/material";
+import { tokens } from "@/app/_MUI/theme";
+import CreateUpdateItem from "./create-update-item-form";
 
 export default function TableProducts({
   products,
+  setProducts,
 }: {
   products: Partial<Product[]>;
+  setProducts: React.Dispatch<React.SetStateAction<Partial<Product[]>>>;
 }) {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -48,8 +58,40 @@ export default function TableProducts({
                     </TableCell>
                     <TableCell align="right">{product.title}</TableCell>
                     <TableCell align="right">{product.category}</TableCell>
-                    <TableCell align="right">{product.price}</TableCell>
-                    <TableCell align="right">{product.stock}</TableCell>
+                    <TableCell align="right">${product.price} USD</TableCell>
+                    <TableCell align="right">{product.stock} und</TableCell>
+                    <TableCell align="center">
+                      <CreateUpdateItem
+                        itemToUpdate={product}
+                        setProducts={setProducts}
+                      >
+                        <Button
+                          sx={{
+                            backgroundColor: colors.blueAccent[700],
+                            color: colors.background[100],
+                            margin: "0 20px",
+                            "&:hover": {
+                              color: colors.grey[300],
+                            },
+                          }}
+                        >
+                          <EditIcon />
+                        </Button>
+                      </CreateUpdateItem>
+
+                      <Button
+                        sx={{
+                          backgroundColor: colors.redAccent[600],
+                          color: colors.background[100],
+                          margin: "0 20px",
+                          "&:hover": {
+                            color: colors.grey[300],
+                          },
+                        }}
+                      >
+                        <DeleteForeverIcon />
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 )
             )
