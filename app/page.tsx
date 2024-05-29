@@ -5,7 +5,7 @@ import logo from "../public/brand.webp";
 import SignInForm from "./(auth)/login/page";
 
 export const metadata: Metadata = {
-  title: "Welcome Page",
+  title: "Login",
   description: "Login to get access to dashboard",
 };
 

@@ -3,9 +3,9 @@ import Link from "next/link";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import LockIcon from "@mui/icons-material/Lock";
 import EmailIcon from "@mui/icons-material/Email";
+import PersonIcon from "@mui/icons-material/Person";
 import { Button, Box, Typography, InputLabel, TextField } from "@mui/material";
 import { useState } from "react";
-import { login } from "@/app/_Firebase/FirebaseFunctions/AuthFunctions";
 import {
   authErrorFirebase,
   authSuccessFirebase,
@@ -13,8 +13,8 @@ import {
 import CircularProgress from "@mui/material/CircularProgress";
 import { FirebaseError } from "firebase/app";
 import { errorCodesFirebase } from "@/app/_Utilities/errorCodesFirebase";
-import logo from "../../../public/brand.webp";
-import Image from "next/image";
+import { signUp } from "@/app/_Firebase/FirebaseFunctions/AuthFunctions";
+import { useRouter } from "next/navigation";
 
 // import { Metadata } from "next";
 
@@ -24,19 +24,27 @@ import Image from "next/image";
 // };
 
 export default function SignUpForm() {
+  const router = useRouter();
+
   {
     /*----------- State usercredentials--------*/
   }
 
-  const [userLogin, setUserLogin] = useState({
+  const [userRegister, setUserRegister] = useState({
     email: "",
     password: "",
+    confirmPassword: "",
+    name: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
-
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
   };
 
   {
@@ -53,8 +61,15 @@ export default function SignUpForm() {
     console.log("enviado el formulario");
     setIsLoading(true);
     try {
-      let res = await login(userLogin);
+      const authUser = {
+        email: userRegister.email,
+        password: userRegister.password,
+        confirmPassword: userRegister.confirmPassword,
+        displayName: userRegister.name,
+      };
+      let res = await signUp(authUser);
       console.log(res);
+      router.push("/dashboard");
       if (res) return authSuccessFirebase();
     } catch (error) {
       if (error instanceof FirebaseError) {
@@ -74,8 +89,8 @@ export default function SignUpForm() {
   const handlerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = event.target;
     if (name === "email") setEmailError(!isValidEmail(value));
-    setUserLogin({
-      ...userLogin,
+    setUserRegister({
+      ...userRegister,
       [name]: value,
     });
   };
@@ -92,9 +107,81 @@ export default function SignUpForm() {
       lowerCaseEmail.includes("@") && lowerCaseEmail.includes("cloudlabs.us")
     );
   };
+  {
+    /*----------- Validation Password  form --------*/
+  }
+
+  const [passError, setPassError] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+
+  const handlePasswordValidation = () => {
+    if (userRegister.password !== userRegister.confirmPassword) {
+      setPasswordError("Las contraseñas no coinciden");
+      setPassError(true);
+    } else if (userRegister.password.length < 6) {
+      setPasswordError("La contraseña es muy corta");
+      setPassError(true);
+    } else {
+      setPasswordError("");
+      setPassError(false);
+    }
+  };
+
   return (
     <>
       <form onSubmit={handleSubmit}>
+        {/*----------- Name and LastName input--------*/}
+        <Box className="input-form">
+          <InputLabel
+            sx={{
+              fontWeight: "bold",
+              fontSize: "16px",
+            }}
+            id="name"
+          >
+            Nombres y Apellidos<span style={{ color: "#007FC0" }}>*</span>
+          </InputLabel>
+
+          <TextField
+            required
+            name="name"
+            id="name"
+            fullWidth
+            size="small"
+            autoComplete="off"
+            variant="outlined"
+            value={userRegister.name}
+            onChange={handlerChange}
+            sx={{
+              "& input": {
+                textAlign: "left",
+              },
+            }}
+            InputLabelProps={{
+              style: {
+                padding: "5px 15px 5px 45px",
+                fontSize: "16px",
+              },
+            }}
+            InputProps={{
+              style: {
+                paddingLeft: "40px",
+                fontSize: "16px",
+              },
+            }}
+          />
+          <PersonIcon
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "12px",
+              width: "20px",
+              height: "20px",
+              color: "#3F51B5",
+            }}
+          />
+        </Box>
+
         {/*----------- Email input--------*/}
         <Box className="input-form">
           <InputLabel
@@ -122,9 +209,10 @@ export default function SignUpForm() {
             placeholder="Ingrese su correo"
             type="email"
             name="email"
+            size="small"
             id="email"
             autoComplete="on"
-            value={userLogin.email}
+            value={userRegister.email}
             onChange={handlerChange}
             helperText={
               emailError
@@ -178,8 +266,14 @@ export default function SignUpForm() {
             type={showPassword ? "text" : "password"}
             name="password"
             id="password"
-            value={userLogin.password}
+            value={userRegister.password}
+            size="small"
             onChange={handlerChange}
+            onBlur={handlePasswordValidation}
+            helperText={passError ? passwordError : ""}
+            FormHelperTextProps={{
+              style: { color: passError ? "red" : "inherit" },
+            }}
             placeholder="Ingrese su contraseña"
             autoComplete="on"
             InputLabelProps={{
@@ -210,19 +304,66 @@ export default function SignUpForm() {
           />
         </Box>
 
-        {/*----------- Go to Forgot password link--------*/}
+        {/*----------- Forgot Password input--------*/}
 
-        <Box
-          sx={{
-            display: "flex",
-            width: "100%",
-            justifyContent: "flex-end",
-            alignItems: "flex-end",
-            marginBottom: "15px",
-            fontWeight: "bolder",
-          }}
-        >
-          <Link href="/forgot-password"> ¿Olvidó su contraseña?</Link>
+        <Box className="input-form">
+          <InputLabel
+            sx={{
+              fontWeight: "bold",
+              fontSize: "16px",
+            }}
+            id="confirmPassword"
+          >
+            Confirme contraseña
+          </InputLabel>
+          <LockIcon
+            sx={{
+              position: "absolute",
+              top: "55%",
+              left: "12px",
+              width: "20px",
+              height: "20px",
+              color: "#3F51B5",
+            }}
+          />
+          <TextField
+            sx={{ width: "100%" }}
+            required
+            type={showConfirmPassword ? "text" : "password"}
+            name="confirmPassword"
+            id="confirmPassword"
+            value={userRegister.confirmPassword}
+            size="small"
+            onChange={handlerChange}
+            onBlur={handlePasswordValidation}
+            placeholder="Confirme su contraseña"
+            autoComplete="on"
+            InputLabelProps={{
+              style: {
+                padding: "5px 15px 5px 45px",
+                fontSize: "16px",
+              },
+            }}
+            InputProps={{
+              style: {
+                padding: "5px 15px 5px 45px",
+                fontSize: "16px",
+              },
+            }}
+          />
+          <VisibilityOutlinedIcon
+            sx={{
+              position: "absolute",
+              zIndex: 10,
+              color: "#3F51B5",
+              right: "12px",
+              width: "20px",
+              height: "20px",
+              top: "55%",
+              cursor: "pointer",
+            }}
+            onClick={toggleConfirmPasswordVisibility}
+          />
         </Box>
 
         {/*----------- Submit  input--------*/}
@@ -230,23 +371,22 @@ export default function SignUpForm() {
         <Button
           variant="contained"
           type="submit"
-          disabled={isLoading}
+          disabled={isLoading || emailError || passError}
           sx={{
             marginBottom: "15px",
           }}
         >
           {isLoading && <CircularProgress />}
-          Iniciar sesión
+          Registrarme
         </Button>
 
         {/*----------- Go to register  link--------*/}
 
         <Box>
           <Typography variant="h5" sx={{ marginBottom: "20px" }}>
-            ¿No tiene una cuenta?
-            <Link href="/register">
-              {" "}
-              <b>¡Regístrate aquí!</b>
+            ¿Ya tiene una cuenta?
+            <Link href="/">
+              <b> ¡Inicie sesión aquí!</b>
             </Link>
           </Typography>
         </Box>

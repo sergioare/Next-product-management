@@ -13,8 +13,11 @@ import {
 import CircularProgress from "@mui/material/CircularProgress";
 import { FirebaseError } from "firebase/app";
 import { errorCodesFirebase } from "@/app/_Utilities/errorCodesFirebase";
+import { useRouter } from "next/navigation";
 
 const SignInForm = () => {
+  const router = useRouter();
+
   {
     /*----------- State usercredentials--------*/
   }
@@ -46,6 +49,7 @@ const SignInForm = () => {
     try {
       let res = await login(userLogin);
       console.log(res);
+      router.push("/dashboard");
       if (res) return authSuccessFirebase();
     } catch (error) {
       if (error instanceof FirebaseError) {

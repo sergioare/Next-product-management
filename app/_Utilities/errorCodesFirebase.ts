@@ -1,5 +1,8 @@
 export function errorCodesFirebase(authCode: string): string {
   switch (authCode) {
+    case "auth/weak-password":
+      return "La contraseña es demasiado débil";
+      
     case "auth/wrong-password":
       return "La contraseña no es correcta";
 
