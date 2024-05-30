@@ -50,7 +50,7 @@ const SignInForm = () => {
     try {
       let res = await login(userLogin);
       console.log(res);
-      setInLocalStorage("user", res)
+      setInLocalStorage("user", res);
       router.push("/dashboard");
       if (res) return authSuccessFirebase();
     } catch (error) {
@@ -241,10 +241,10 @@ const SignInForm = () => {
 
         <Box>
           <Typography variant="h5" sx={{ marginBottom: "20px" }}>
-            ¿No tiene una cuenta?
-            <Link href="/register">
-              <b>¡Regístrate aquí!</b>
-            </Link>
+            ¿No tiene una cuenta? 
+            <b>
+              <Link href="/register"> ¡Regístrate aquí!</Link>
+            </b>
           </Typography>
         </Box>
       </form>
