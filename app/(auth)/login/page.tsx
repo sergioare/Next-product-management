@@ -242,9 +242,7 @@ const SignInForm = () => {
         <Box>
           <Typography variant="h5" sx={{ marginBottom: "20px" }}>
             ¿No tiene una cuenta? 
-            <b>
               <Link href="/register"> ¡Regístrate aquí!</Link>
-            </b>
           </Typography>
         </Box>
       </form>
