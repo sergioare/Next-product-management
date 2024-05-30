@@ -213,6 +213,7 @@ export const themeSettings = (mode: PaletteMode): ThemeOptions => {
               fontSize: "14px",
               padding: "2px 15px",
               textTransform: "none",
+              
             },
           },
         ],

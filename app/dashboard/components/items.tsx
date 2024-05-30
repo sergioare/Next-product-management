@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   CircularProgress,
+  TextField,
   Typography,
   useTheme,
 } from "@mui/material";
@@ -23,16 +24,26 @@ const Items = () => {
   }
   const [products, setProducts] = useState<Partial<Product[]>>([]);
 
-  const handleUpdateProductList = (updatedProduct:Product) => {
-    setProducts(prevProducts => {
-      const updateProducts = prevProducts.map(product=>{
-        if(product?.id === updatedProduct.id){
-          return {...product, ...updatedProduct}
-        }
-        return product
-      })
-      return updateProducts
+  {
+    /*----------- State to search products and filter --------*/
+  }
+  const [searchTerm, setSearchTerm] = useState("");
+  const [productsFiltered, setProductsFiltered] = useState<Partial<Product[]>>(
+    []
+  );
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value.toLowerCase());
+    const filteredProducts = products.filter((product) => {
+      const searchTermLowerCase = event.target.value.toLowerCase().trim();
+      return (
+        product?.title.toLowerCase().includes(searchTermLowerCase) ||
+        product?.category.toLowerCase().includes(searchTermLowerCase) ||
+        product?.description.toLowerCase().includes(searchTermLowerCase)
+      );
     });
+    console.log(filteredProducts);
+    setProductsFiltered(filteredProducts);
   };
 
   {
@@ -69,7 +80,30 @@ const Items = () => {
         <Typography variant="h3" sx={{ marginLeft: "5px" }}>
           Mis productos
         </Typography>
-        <CreateUpdateItem  setProducts={setProducts}>
+
+        <TextField
+          sx={{ width: "400px", display: { xs: "none", md: "flex" } }}
+          required
+          placeholder="Buscar producto..."
+          type="text"
+          size="small"
+          name="searchTerm"
+          id="searchTerm"
+          autoComplete="on"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          InputLabelProps={{
+            style: {
+              fontSize: "16px",
+            },
+          }}
+          InputProps={{
+            style: {
+              fontSize: "16px",
+            },
+          }}
+        />
+        <CreateUpdateItem setProducts={setProducts}>
           <Button
             variant="outlined"
             sx={{
@@ -90,7 +124,12 @@ const Items = () => {
           <CircularProgress /> Cargando productos...{" "}
         </p>
       ) : (
-        <TableProducts products={products} setProducts={setProducts}/>
+        <TableProducts
+          products={products}
+          setProducts={setProducts}
+          productsFiltered={productsFiltered}
+          setProductsFiltered={setProductsFiltered}
+        />
       )}
     </>
   );
