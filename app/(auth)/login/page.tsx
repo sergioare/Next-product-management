@@ -249,7 +249,7 @@ const SignInForm = () => {
           ¿No tiene una cuenta?
           &nbsp;
           <b>
-            <Link href="/register">¡Regístrate aquí!</Link>
+            <Link href="/Register">¡Regístrate aquí!</Link>
           </b>
         </Box>
       </form>
